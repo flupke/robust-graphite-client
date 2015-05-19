@@ -3,21 +3,8 @@ language: python
 python:
   - "2.7"
 
-env:
-  - DEFAULT_DB=mysql
-  - DEFAULT_DB=postgres
-
-services:
-  - mysql
-  - postgresql
-  - redis-server
-
 install:
-  - "pip install -e .[$DEFAULT_DB,tests]"
-
-before_script:
-  - mysql -e 'create database sentry;'
-  - psql -c 'create database sentry;' -U postgres
+  - "pip install -e .[tests]"
 
 script:
   - make tests
