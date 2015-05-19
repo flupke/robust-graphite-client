@@ -37,7 +37,7 @@ class GraphiteClient(HttpClient):
         self.endpoint = endpoint
         self.min_queries_range = min_queries_range
 
-    def get_metric(self, target, from_=60, aggregator=average):
+    def get_metric_value(self, target, from_=60, aggregator=average):
         '''
         Get the current value of a metric, by aggregating Graphite datapoints
         over an interval.
@@ -47,7 +47,11 @@ class GraphiteClient(HttpClient):
         recent data point.
 
         Returns the resulting floating point value, or raise an
-        :class:`InvalidDataFormat` exception if the retured data is invalid.
+        :class:`~robgracli.exceptions.InvalidDataFormat` if the retured data is
+        invalid, or :class:`~robgracli.exceptions.EmptyData` if there are no
+        datapoints to aggregate (this can happen if there are only null data
+        points in the returned data, or if :attr:`min_queries_range` is not
+        large enough).
         '''
         query_from = max(self.min_queries_range, from_)
         url = urljoin(self.endpoint, '/render')
