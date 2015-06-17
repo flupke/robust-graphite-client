@@ -1,6 +1,7 @@
 import json
 
 import pytest
+import mock
 from httmock import all_requests, HTTMock
 
 from ..client import GraphiteClient, filter_values
@@ -102,3 +103,18 @@ def test_filter_values():
     # Nones are filtered out
     assert filter_values([[None, 1], [1, 2], [None, 3]], 100) == [1]
 
+
+@mock.patch('robgracli.http.HttpClient.get', autospec=True)
+def test_metrics_prefix(HttpClient_get):
+    response = mock.Mock()
+    response.json.return_value = SINGLE_METRIC_DATA
+    HttpClient_get.return_value = response
+
+    client = GraphiteClient('https://graphite.com', metrics_prefix='foo.')
+    client.get_metric_value('bar')
+
+    HttpClient_get.assert_called_once_with(client, mock.ANY, params={
+        'target': 'foo.bar',
+        'format': mock.ANY,
+        'from': mock.ANY,
+    })

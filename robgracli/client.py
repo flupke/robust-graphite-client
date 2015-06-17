@@ -27,15 +27,18 @@ class GraphiteClient(HttpClient):
 
         As a guideline, the default value of 10 minutes gave good results on
         our server for querying 1 minute data ranges with a
-        ``10s:1d,1min:7d,10min:1y`` retention schema.
+        ``10s:1d,1min:7d,10min:1y`` retention schema;
+    :param metrics_prefix: a string prefixed to all metrics.
 
     Additional arguments are passed to :class:`robgracli.http.HttpClient`.
     '''
 
-    def __init__(self, endpoint, min_queries_range=60 * 10, *args, **kwargs):
+    def __init__(self, endpoint, min_queries_range=60 * 10, metrics_prefix='',
+            *args, **kwargs):
         super(GraphiteClient, self).__init__(*args, **kwargs)
         self.endpoint = endpoint
         self.min_queries_range = min_queries_range
+        self.metrics_prefix = metrics_prefix
 
     def get_metric_value(self, target, from_=60, aggregator=average):
         '''
@@ -53,6 +56,8 @@ class GraphiteClient(HttpClient):
         points in the returned data, or if :attr:`min_queries_range` is not
         large enough).
         '''
+        target = self.metrics_prefix + target
+
         query_from = max(self.min_queries_range, from_)
         url = urljoin(self.endpoint, '/render')
         response = self.get(url, params={

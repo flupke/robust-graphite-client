@@ -11,6 +11,7 @@ tests_requires = [
     'pytest',
     'pytest-cov>=1.8.1',
     'httmock',
+    'mock',
 ]
 dev_requires = [
     'sphinx',
@@ -36,7 +37,7 @@ class PyTest(TestCommand):
 
 setup(
     name='robust-graphite-client',
-    version='0.0.3',
+    version='0.0.4',
     license='MIT',
     author='Luper Rouch',
     author_email='luper.rouch@gmail.com',
