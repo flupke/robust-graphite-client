@@ -1,6 +1,8 @@
 import requests
+from requests.exceptions import HTTPError
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3 import Retry
+from .exceptions import BadResponse
 
 
 class HttpClient(object):
@@ -39,7 +41,10 @@ class HttpClient(object):
                                         timeout=self.timeout,
                                         **self.extra_requests_opts)
         if raise_for_status:
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except HTTPError:
+                raise BadResponse(response)
         return response
 
     def get(self, url, params=None, raise_for_status=True):
