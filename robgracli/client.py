@@ -34,13 +34,14 @@ class GraphiteClient(HttpClient):
     '''
 
     def __init__(self, endpoint, min_queries_range=60 * 10, metrics_prefix='',
-            *args, **kwargs):
+                 *args, **kwargs):
         super(GraphiteClient, self).__init__(*args, **kwargs)
         self.endpoint = endpoint
         self.min_queries_range = min_queries_range
         self.metrics_prefix = metrics_prefix
 
-    def get_metric_value(self, target, from_=60, aggregator=average):
+    def get_metric_value(self, target, from_=60, aggregator=average,
+                         allow_multiple=False):
         '''
         Get the current value of a metric, by aggregating Graphite datapoints
         over an interval.
@@ -55,6 +56,9 @@ class GraphiteClient(HttpClient):
         datapoints to aggregate (this can happen if there are only null data
         points in the returned data, or if :attr:`min_queries_range` is not
         large enough).
+
+        If *allow_multiple* is True, queries returning multiple metrics can be
+        made. In this case we return a dict indexed by targets.
         '''
         target = self.metrics_prefix + target
 
@@ -71,24 +75,34 @@ class GraphiteClient(HttpClient):
         err_prefix = 'got invalid data for "%s": ' % target
         if not isinstance(data, list):
             raise InvalidDataFormat(err_prefix +
-                    'expected a list but got a %s instead' % type(data))
+                                    'expected a list but got a %s instead' %
+                                    type(data))
         if not len(data):
             err_message = err_prefix + 'empty data returned'
             raise InvalidDataFormat(err_message)
         if len(data) > 1:
-            err_message = err_prefix + 'multiple metrics returned'
-            raise InvalidDataFormat(err_message)
+            if not allow_multiple:
+                err_message = err_prefix + 'multiple metrics returned'
+                raise InvalidDataFormat(err_message)
         if not isinstance(data[0], dict):
-            raise InvalidDataFormat(err_prefix + 'expected a dict '
-                    'at item 0 but got a %s instead' % type(data[0]))
+            raise InvalidDataFormat(err_prefix +
+                                    'expected a dict at item 0 but got a '
+                                    '%s instead' % type(data[0]))
 
-        # Filter data, removing null points and trimming to the desired range
-        values = filter_values(data[0]['datapoints'], from_)
-        if not values:
-            raise EmptyData('got no valid data points for "%s"' % target)
+        # Filter data, removing null points and trimming to the desired range,
+        # and aggregate values
+        for metric in data:
+            values = filter_values(metric['datapoints'], from_)
+            if not values:
+                raise EmptyData('got no valid data points for "%s"' %
+                                metric['target'])
+            metric['value'] = aggregator(values)
 
-        # Aggregate values
-        return aggregator(values)
+        # Return a dict or a single value
+        if len(data) == 1:
+            return data[0]['value']
+        else:
+            return {d['target']: d['value'] for d in data}
 
 
 def filter_values(datapoints, max_age):
@@ -100,7 +114,7 @@ def filter_values(datapoints, max_age):
     '''
     # Convert timestamps and filter out null values
     datapoints = [(e[0], datetime.datetime.fromtimestamp(e[1]))
-        for e in datapoints if e[0] is not None]
+                  for e in datapoints if e[0] is not None]
     if not len(datapoints):
         return []
     last_point_date = datapoints[-1][1]
@@ -108,4 +122,3 @@ def filter_values(datapoints, max_age):
         lambda (_, date): (last_point_date - date).total_seconds() <= max_age,
         datapoints)
     return [e[0] for e in datapoints]
-

@@ -1,1 +1,1 @@
-from .client import GraphiteClient
+from .client import GraphiteClient  # NOQA
