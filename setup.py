@@ -37,12 +37,13 @@ class PyTest(TestCommand):
 
 setup(
     name='robust-graphite-client',
-    version='0.0.4',
+    version='0.1.0',
     license='MIT',
     author='Luper Rouch',
     author_email='luper.rouch@gmail.com',
     url='https://github.com/Stupeflix/robust-graphite-client',
-    description='A simple graphite querying library with workarounds on some rare bugs',
+    description='A simple graphite querying library with workarounds on '
+        'some rare bugs',
     long_description=open('README.md').read(),
     packages=find_packages(),
     install_requires=install_requires,
