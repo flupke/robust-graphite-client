@@ -14,6 +14,7 @@ Usage::
 
     client = robgracli.GraphiteClient('http://my-graphite-server.com')
     client.aggregate('my.awesome.metric')
+    print result['my.awesome.metric']
 
 Reference:
 
