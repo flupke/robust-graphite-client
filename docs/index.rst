@@ -13,7 +13,7 @@ Usage::
     import robgracli
 
     client = robgracli.GraphiteClient('http://my-graphite-server.com')
-    client.get_metric_value('my.awesome.metric')
+    client.aggregate('my.awesome.metric')
 
 Reference:
 
