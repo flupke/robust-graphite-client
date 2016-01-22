@@ -43,7 +43,7 @@ setup(
     url='https://github.com/Stupeflix/robust-graphite-client',
     description='A simple graphite querying library with workarounds on '
         'some rare bugs',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     packages=find_packages(),
     install_requires=install_requires,
     extras_require={
