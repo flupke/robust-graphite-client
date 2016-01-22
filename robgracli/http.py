@@ -22,7 +22,7 @@ class HttpClient(object):
         :meth:`requests.Session.request` calls.
     '''
 
-    def __init__(self, connect_timeout=5, read_timeout=2.5, max_retries=3,
+    def __init__(self, connect_timeout=5, read_timeout=5, max_retries=3,
                  backoff_factor=1, **extra_requests_opts):
         self.timeout = (connect_timeout, read_timeout)
         self.extra_requests_opts = extra_requests_opts
