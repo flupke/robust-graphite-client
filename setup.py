@@ -16,7 +16,7 @@ dev_requires = [
     'sphinx',
 ]
 install_requires = [
-    'requests>=2.4.0',
+    'requests[security]>=2.4.0',
 ]
 
 
