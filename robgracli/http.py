@@ -51,10 +51,6 @@ class HttpClient(object):
         return self.request('GET', url, data=None, params=params,
                             raise_for_status=raise_for_status)
 
-    def post(self, url, data=None, params=None, raise_for_status=True):
-        return self.request('POST', url, data=data, params=params,
-                            raise_for_status=raise_for_status)
-
 
 def get_adapter(max_retries, backoff_factor):
     retry = Retry(max_retries, backoff_factor=backoff_factor)
