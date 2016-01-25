@@ -16,6 +16,9 @@ dev_requires = [
     'sphinx',
 ]
 install_requires = [
+    'requests>=2.4.0',
+]
+security_requires = [
     'requests[security]>=2.4.0',
 ]
 
@@ -49,6 +52,7 @@ setup(
     extras_require={
         'tests': tests_requires,
         'dev': dev_requires,
+        'security': security_requires,
     },
     tests_require=tests_requires,
     cmdclass={'test': PyTest},
