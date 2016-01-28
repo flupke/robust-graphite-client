@@ -48,6 +48,22 @@ METRIC_WITH_ONLY_NULLS_DATA = [{
     ],
     'target': 'foo'
 }]
+FIND_METRICS_SAMPLE = [
+    {
+        'text': 'carbon',
+        'expandable': 1,
+        'leaf': 0,
+        'id': 'carbon',
+        'allowChildren': 1
+    },
+    {
+        'text': 'statsd',
+        'expandable': 1,
+        'leaf': 0,
+        'id': 'statsd',
+        'allowChildren': 1
+    }
+]
 
 
 def test_query(httpserver):
@@ -103,3 +119,9 @@ def test_server_error(httpserver):
     with pytest.raises(BadResponse) as exc:
         client.query('metric')
         assert error_body in exc.value
+
+
+def test_find_metrics(httpserver):
+    httpserver.serve_content(json.dumps(FIND_METRICS_SAMPLE))
+    client = GraphiteClient(httpserver.url)
+    assert client.find_metrics('*') == FIND_METRICS_SAMPLE

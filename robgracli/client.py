@@ -78,6 +78,37 @@ class GraphiteClient(HttpClient):
                 ret[key] = None
         return ret
 
+    def find_metrics(self, query):
+        '''
+        Find metrics on the server.
+
+        Querying '*' will return the root of all metrics, and you can then find
+        other metrics from there.
+
+        Return a list of dicts of the form::
+
+            [
+                {
+                    'text': 'carbon',
+                    'expandable': 1,
+                    'leaf': 0,
+                    'id': 'carbon',
+                    'allowChildren': 1
+                },
+                {
+                    'text': 'statsd',
+                    'expandable': 1,
+                    'leaf': 0,
+                    'id': 'statsd',
+                    'allowChildren': 1
+                }
+            ]
+
+        '''
+        url = urljoin(self.endpoint, '/metrics/find')
+        response = self.get(url, {'query': query})
+        return response.json()
+
 
 def trim_datapoints(datapoints, max_age):
     if len(datapoints):
