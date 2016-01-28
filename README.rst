@@ -25,6 +25,11 @@ For details consult the `documentation <http://robust-graphite-client.readthedoc
 History
 -------
 
+1.1.0
+~~~~~
+
+Add ``GraphiteClient.find_metrics()``.
+
 1.0.0
 ~~~~~
 
