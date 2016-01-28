@@ -36,7 +36,7 @@ class PyTest(TestCommand):
 
 setup(
     name='robust-graphite-client',
-    version='1.0.2',
+    version='1.1.0',
     license='MIT',
     author='Luper Rouch',
     author_email='luper.rouch@gmail.com',
